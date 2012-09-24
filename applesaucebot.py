@@ -1,0 +1,41 @@
+## applesaucebot
+## Jacob Peck
+## 
+
+import sys
+import time
+import pickle
+import botlib
+import random
+
+class ApplesauceBot(botlib.Bot):
+  def __init__(self, server, channel, nick, password=None):
+    botlib.Bot.__init__(self, server, 6667, channel, nick)
+
+    if password != None:
+      self.protocol.privmsg("nickserv", "identify %s" % password)
+
+  def __actions__(self):
+    botlib.Bot.__actions__(self)
+    username = self.get_username()
+    if botlib.check_found(self.data, "?hello"):
+      self.protocol.privmsg(self.channel, "Hello %s!" % username)
+    if botlib.check_found(self.data, "?time"):
+      t = time.strftime("%H:%M:%S %Y-%m-%d", time.localtime())
+      self.protocol.privmsg(self.channel, "The current time is: %s" % t)
+    if botlib.check_found(self.data, "?roll"):
+      num = random.randrange(1,6+1)
+      self.protocol.privmsg(self.channel, "%s rolled a d6: %d" % (username, num))
+    if botlib.check_found(self.data, "?flip"):
+      coin = bool(random.getrandbits(1))
+      if coin:
+        coin = "heads"
+      else:
+        coin = "tails"
+      self.protocol.privmsg(self.channel, "%s flipped a coin: %s" % (username, coin))
+if __name__ == "__main__":
+  f = open('bot.conf', 'r')
+  c = pickle.load(f)
+  f.close()
+  ApplesauceBot(c[0], c[1], c[2], c[3]).run()
+
