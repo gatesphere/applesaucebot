@@ -2,51 +2,95 @@
 ## Jacob Peck
 ## 
 
+# standard lib
 import sys
+import os
 import time
 import pickle
-import botlib
 import random
+import re
+import types
+
+# botlib
+import botlib
+
+# configuration file
+config_file = 'bot.conf'
 
 class ApplesauceBot(botlib.Bot):
+  commands = { }
+  moduledir = 'modules'
+  regex = ''
+  
   def __init__(self, server, channel, nick, password=None):
+    """ constructor, builds an IRC bot with the correct configuration, 
+        connects to a channel, loads commands
+    """
+    self.load_commands()
     botlib.Bot.__init__(self, server, 6667, channel, nick)
     if password != None:
       self.protocol.privmsg("nickserv", "identify %s" % password)
-    print "Connected to channel %s with nick %s" % (self.channel, self.nick)
+    #print "Connected to channel %s with nick %s" % (self.channel, self.nick)
+    self.regex = regex = re.compile("^(\?|%s:|%s,)" % (self.nick, self.nick), re.IGNORECASE)
 
   def __actions__(self):
+    """ action dispatcher """
     botlib.Bot.__actions__(self)
-    username = self.get_username()
-    if botlib.check_found(self.data, "?hello"):
-      self.hello(username)
-    if botlib.check_found(self.data, "?time"):
-      self.time(username)
-    if botlib.check_found(self.data, "?roll"):
-      self.roll(username)
-    if botlib.check_found(self.data, "?flip"):
-      self.flip(username)
+    #print self.data
+    #if botlib.check_found(self.data, "identified for"):
+      #print "Identified for %s" % self.nick
+    if self.check_found_regex(self.get_message_data(), self.regex):
+      username = self.get_username()
+      cmdtime = time.strftime("%H:%M:%S %Y-%m-%d", time.localtime())
+      d = self.get_message_data().split()
+      if d[0].startswith(self.nick):
+        command, args = d[1], d[2:]
+      else:
+        command, args = d[0][1:], d[1:]
+      #print "%s is trying to get my attention: %s" % (username, self.data)
+      self.do_command(username, cmdtime, command.lower(), args)
 
-  def hello(self, username):
-    self.protocol.privmsg(self.channel, "Hello %s!" % username)
+  def check_found_regex(self, string, regex):
+    """ check if string matches regex """
+    if string != None:
+      if re.search(regex, string) != None:
+        return True
+    return False
 
-  def time(self, username):
-    t = time.strftime("%H:%M:%S %Y-%m-%d", time.localtime())
-    self.protocol.privmsg(self.channel, "%s: The current time is: %s" % (username, t))
+  def get_message_data(self):
+    """ gets the "data" portion of the message """
+    d = self.data
+    d = d.split(":", 2)
+    return (d[2] if len(d) == 3 else None)
 
-  def roll(self, username):
-    num = random.randrange(1,6+1)
-    self.protocol.privmsg(self.channel, "%s rolled a d6: %d" % (username, num))
+  def load_commands(self):
+    """ loads the commands into the dictionary """
+    self.commands = { }
+    lst = os.listdir(self.moduledir)
+    for m in lst:
+      s = os.path.abspath(self.moduledir) + os.sep + m
+      execfile(s)
+    self.commands['reload'] = self.reload
+    
+  def reload(self, ignorethis, username, cmdtime, command, args):
+    self.load_commands()
+    self.protocol.privmsg(self.channel, "%s: Reloaded all modules." % username)
 
-  def flip(self, username):
-    if bool(random.getrandbits(1)):
-      coin = "heads"
-    else:
-      coin = "tails"
-    self.protocol.privmsg(self.channel, "%s flipped a coin: %s" % (username, coin))
+  def do_command(self, username, cmdtime, command, args):
+    """ dispatch to a command by name """
+    try:
+      c = self.commands[command]
+    except KeyError:
+      self.unknown_command(username, cmdtime, command, args)
+      return
+    c(self, username, cmdtime, command, args)
+
+  def unknown_command(self, username, cmdtime, command, args):
+    self.protocol.privmsg(self.channel, "%s: I do not understand %s" % (username, command))
 
 if __name__ == "__main__":
-  f = open('bot.conf', 'r')
+  """ run the bot, reading in configuration from a config file """
+  f = open(config_file, 'r')
   c = pickle.load(f)
   f.close()
   ApplesauceBot(c[0], c[1], c[2], c[3]).run()
