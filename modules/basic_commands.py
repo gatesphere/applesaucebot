@@ -1,3 +1,22 @@
+def die(self, username, cmdtime, command, args):
+  """ kill the bot """
+  if args and args[0] == self.admin_pw:
+    self.protocol.privmsg(self.channel, "Bye everybody.")
+    os._exit(0)
+  else:
+    self.protocol.privmsg(self.channel, "%s: I can't let you do that." % username)
+
+self.die = types.MethodType(die, None, ApplesauceBot)
+self.commands['die'] = self.die
+
+def help_listing(self, username, cmdtime, command, args):
+  """ list commands """
+  self.protocol.privmsg(self.channel, "%s, my current commands are: %s" % (username, self.commands.keys()))
+  
+self.help_listing = types.MethodType(help_listing, None, ApplesauceBot)
+self.commands['help'] = self.help_listing
+
+
 def hello(self, username, cmdtime, command, args):
   """ greet the user """
   self.protocol.privmsg(self.channel, "Hello there, %s!" % username)

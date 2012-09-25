@@ -3,6 +3,7 @@
 ## 
 
 # standard lib
+import traceback
 import sys
 import os
 import time
@@ -86,6 +87,7 @@ class ApplesauceBot(botlib.Bot):
       c = self.commands[command]
       c(self, username, cmdtime, command, args)
     except:
+      traceback.print_exc()
       self.unknown_command(username, cmdtime, command, args)
       return
     
