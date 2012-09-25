@@ -22,10 +22,11 @@ class ApplesauceBot(botlib.Bot):
   moduledir = 'modules'
   regex = ''
   
-  def __init__(self, server, channel, nick, password=None):
+  def __init__(self, server, channel, nick, password=None, admin_password=None):
     """ constructor, builds an IRC bot with the correct configuration, 
         connects to a channel, loads commands
     """
+    self.admin_pw = admin_password
     self.load_commands()
     botlib.Bot.__init__(self, server, 6667, channel, nick)
     if password != None:
@@ -73,8 +74,11 @@ class ApplesauceBot(botlib.Bot):
     self.commands['reload'] = self.reload
     
   def reload(self, ignorethis, username, cmdtime, command, args):
-    self.load_commands()
-    self.protocol.privmsg(self.channel, "%s: Reloaded all modules." % username)
+    if args and args[0] == self.admin_pw:
+      self.load_commands()
+      self.protocol.privmsg(self.channel, "%s: Reloaded all modules." % username)
+    else:
+      self.protocol.privmsg(self.channel, "%s: I can't let you do that." % username)
 
   def do_command(self, username, cmdtime, command, args):
     """ dispatch to a command by name """
@@ -93,5 +97,5 @@ if __name__ == "__main__":
   f = open(config_file, 'r')
   c = pickle.load(f)
   f.close()
-  ApplesauceBot(c[0], c[1], c[2], c[3]).run()
+  ApplesauceBot(c[0], c[1], c[2], c[3], c[4]).run()
 

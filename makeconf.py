@@ -26,8 +26,10 @@ if __name__ == "__main__":
   nick = sin()
   sout("password? ")
   password = sin()
+  sout("admin password? ")
+  admin = sin()
   f = open(filename, 'w')
-  pickle.dump((server, channel, nick, password), f)
+  pickle.dump((server, channel, nick, password, admin), f)
   f.close()
   print "Configuration saved as %s" % filename
 
