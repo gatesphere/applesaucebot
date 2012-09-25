@@ -84,13 +84,13 @@ class ApplesauceBot(botlib.Bot):
     """ dispatch to a command by name """
     try:
       c = self.commands[command]
-    except KeyError:
+      c(self, username, cmdtime, command, args)
+    except:
       self.unknown_command(username, cmdtime, command, args)
       return
-    c(self, username, cmdtime, command, args)
-
+    
   def unknown_command(self, username, cmdtime, command, args):
-    self.protocol.privmsg(self.channel, "%s: I do not understand %s" % (username, command))
+    self.protocol.privmsg(self.channel, "%s: I do not understand %s %s" % (username, command, args))
 
 if __name__ == "__main__":
   """ run the bot, reading in configuration from a config file """
