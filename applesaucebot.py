@@ -100,7 +100,7 @@ class ApplesauceBot(botlib.Bot):
     
   def unknown_command(self, username, cmdtime, command, args):
     logging.info('%s - Unknown command %s %s from user %s' % (cmdtime, command, args, username))
-    self.protocol.privmsg(self.channel, "%s: I do not understand %s %s" % (username, command, args))
+    self.protocol.privmsg(username, "%s: I do not understand %s %s" % (username, command, args))
 
 if __name__ == "__main__":
   """ run the bot, reading in configuration from a config file """
