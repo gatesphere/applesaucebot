@@ -10,13 +10,14 @@ import time
 import pickle
 import random
 import re
-import types
+import logging
 
 # botlib
 import botlib
 
 # configuration file
 config_file = 'bot.conf'
+log_file = 'bot.log'
 
 class ApplesauceBot(botlib.Bot):
   commands = { }
@@ -27,30 +28,35 @@ class ApplesauceBot(botlib.Bot):
     """ constructor, builds an IRC bot with the correct configuration, 
         connects to a channel, loads commands
     """
+    logging.basicConfig(filename=log_file, level=logging.DEBUG)
+    logging.info('Bot starting up at %s' % time.strftime("%H:%M:%S %Y-%m-%d", time.localtime()))
     self.admin_pw = admin_password
     self.load_commands()
     botlib.Bot.__init__(self, server, 6667, channel, nick)
     if password != None:
       self.protocol.privmsg("nickserv", "identify %s" % password)
-    #print "Connected to channel %s with nick %s" % (self.channel, self.nick)
+    logging.info('Connected to channel %s with nick %s' % (self.channel, self.nick))
     self.regex = regex = re.compile("^(\?|%s:|%s,)" % (self.nick, self.nick), re.IGNORECASE)
 
   def __actions__(self):
     """ action dispatcher """
     botlib.Bot.__actions__(self)
-    #print self.data
-    #if botlib.check_found(self.data, "identified for"):
-      #print "Identified for %s" % self.nick
+    if botlib.check_found(self.data, "identified for"):
+      logging.info('Identified for %s' % self.nick)
     if self.check_found_regex(self.get_message_data(), self.regex):
       username = self.get_username()
       cmdtime = time.strftime("%H:%M:%S %Y-%m-%d", time.localtime())
-      d = self.get_message_data().split()
-      if d[0].startswith(self.nick):
+      d = self.get_message_data().lower().split()
+      if d[0].startswith(self.nick.lower()):
         command, args = d[1], d[2:]
       else:
         command, args = d[0][1:], d[1:]
-      #print "%s is trying to get my attention: %s" % (username, self.data)
+      logging.info("%s - %s is trying to get my attention: %s" % (cmdtime, username, self.data))
       self.do_command(username, cmdtime, command.lower(), args)
+
+  def register_action(self, name, fn):
+    ''' add a command '''
+    self.commands[name] = fn
 
   def check_found_regex(self, string, regex):
     """ check if string matches regex """
@@ -68,11 +74,12 @@ class ApplesauceBot(botlib.Bot):
   def load_commands(self):
     """ loads the commands into the dictionary """
     self.commands = { }
+    self.commands['reload'] = self.reload
     lst = os.listdir(self.moduledir)
     for m in lst:
       s = os.path.abspath(self.moduledir) + os.sep + m
       execfile(s)
-    self.commands['reload'] = self.reload
+      logging.info('Loading module: %s' % s)
     
   def reload(self, ignorethis, username, cmdtime, command, args):
     if args and args[0] == self.admin_pw:
@@ -87,11 +94,12 @@ class ApplesauceBot(botlib.Bot):
       c = self.commands[command]
       c(self, username, cmdtime, command, args)
     except:
-      traceback.print_exc()
+      logging.info(traceback.format_exc())
       self.unknown_command(username, cmdtime, command, args)
       return
     
   def unknown_command(self, username, cmdtime, command, args):
+    logging.info('%s - Unknown command %s %s from user %s' % (cmdtime, command, args, username))
     self.protocol.privmsg(self.channel, "%s: I do not understand %s %s" % (username, command, args))
 
 if __name__ == "__main__":
