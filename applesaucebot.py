@@ -52,7 +52,8 @@ class ApplesauceBot(botlib.Bot):
       else:
         command, args = d[0][1:], d[1:]
       logging.info("%s - %s is trying to get my attention: %s" % (cmdtime, username, self.data))
-      self.do_command(username, cmdtime, command.lower(), args)
+      if command:
+        self.do_command(username, cmdtime, command.lower(), args)
 
   def register_action(self, name, fn):
     ''' add a command '''
