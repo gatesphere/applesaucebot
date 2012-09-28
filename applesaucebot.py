@@ -41,6 +41,7 @@ class ApplesauceBot(botlib.Bot):
   def __actions__(self):
     """ action dispatcher """
     botlib.Bot.__actions__(self)
+    logging.info("Recieved data = %s" % self.data)
     if botlib.check_found(self.data, "identified for"):
       logging.info('Identified for %s' % self.nick)
     if self.check_found_regex(self.get_message_data(), self.regex):
@@ -54,6 +55,19 @@ class ApplesauceBot(botlib.Bot):
       logging.info("%s - %s is trying to get my attention: %s" % (cmdtime, username, self.data))
       if command:
         self.do_command(username, cmdtime, command.lower(), args)
+    if self.joined:
+      self.check_joined()
+    
+  def check_joined(self):
+    if not self.joined:
+      return
+    self.protocol.send("WHO %s" % self.channel)
+    info = str()
+    while not botlib.check_found(info, "End of /WHO list"):
+      info += self.protocol.recv()
+      #logging.info(info)
+    if not botlib.check_found(info, "H :0  %s" % self.nick):
+      self.protocol.join(self.channel)
 
   def register_action(self, name, fn):
     ''' add a command '''
