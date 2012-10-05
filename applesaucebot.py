@@ -59,13 +59,14 @@ class ApplesauceBot(botlib.Bot):
       self.check_joined()
     
   def check_joined(self):
-    if not self.joined:
-      return
+    logging.info("Check joined...")
+    #if not self.joined:
+    #  return
     self.protocol.send("WHO %s" % self.channel)
-    info = str()
+    info = b""
     while not botlib.check_found(info, "End of /WHO list"):
       info += self.protocol.recv()
-      #logging.info(info)
+      logging.info(info)
     if not botlib.check_found(info, "H :0  %s" % self.nick):
       self.protocol.join(self.channel)
 

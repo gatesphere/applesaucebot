@@ -14,7 +14,7 @@ import sys, time, random, string, threading
 #check_found = lambda s, k: (True if s.find(k) > -1 else False)
 def check_found(s, k):
   try:
-    if s.find(k) > -1:
+    if s.find(k.encode()) > -1:
       return True
     else:
       return False
