@@ -5,12 +5,21 @@
 #| Copyright (C) 2008 MadSoft
 #| Website: www.madsoft.org
 #| License: Public Domain
+#| Updated to Python 3 by Jacob Peck
 #+---------------------------------------------+
 
 from socket import *
 import sys, time, random, string, threading
 
-check_found = lambda s, k: (True if s.find(k) > -1 else False)
+#check_found = lambda s, k: (True if s.find(k) > -1 else False)
+def check_found(s, k):
+  try:
+    if s.find(k) > -1:
+      return True
+    else:
+      return False
+  except:
+    return False
 
 class Protocol:
   def __init__(self, server, port=6667):
@@ -26,26 +35,24 @@ class Protocol:
     the entire message has been sent to the server
     """
     while datasent < len(message):
-      sent = self.connection.send(message)
+      sent = self.connection.send(message.encode())
       if sent == 0:
-        raise RuntimeError, "Connection reset by peer."
+        raise RuntimeError("Connection reset by peer.")
       else:
         datasent += sent
   
   def recv(self):
-    data = str()
-    
+    data = b"" 
     """
     Continue recieving data from the server until
     we have recieved the end of the message
     """
-    while data.find("\r") == -1:
+    while data.find(b"\r") == -1:
       chunk = self.connection.recv(512)
       if chunk == None:
-        raise RuntimeError, "Connection reset by peer."
+        raise RuntimeError("Connection reset by peer.")
       else:
         data += chunk
-    
     return data
   
   def join(self, channel):

@@ -36,7 +36,7 @@ class ApplesauceBot(botlib.Bot):
     if password != None:
       self.protocol.privmsg("nickserv", "identify %s" % password)
     logging.info('Connected to channel %s with nick %s' % (self.channel, self.nick))
-    self.regex = regex = re.compile("^(\?|%s:|%s,)" % (self.nick, self.nick), re.IGNORECASE)
+    self.regex = regex = re.compile(("^(\?|%s:|%s,)" % (self.nick, self.nick)).encode(), re.IGNORECASE)
 
   def __actions__(self):
     """ action dispatcher """
@@ -83,7 +83,7 @@ class ApplesauceBot(botlib.Bot):
   def get_message_data(self):
     """ gets the "data" portion of the message """
     d = self.data
-    d = d.split(":", 2)
+    d = d.split(b":", 2)
     return (d[2] if len(d) == 3 else None)
 
   def load_commands(self):
@@ -93,7 +93,7 @@ class ApplesauceBot(botlib.Bot):
     lst = os.listdir(self.moduledir)
     for m in lst:
       s = os.path.abspath(self.moduledir) + os.sep + m
-      execfile(s)
+      exec(open(s).read())
       logging.info('Loading module: %s' % s)
     
   def reload(self, ignorethis, username, cmdtime, command, args):
@@ -119,7 +119,7 @@ class ApplesauceBot(botlib.Bot):
 
 if __name__ == "__main__":
   """ run the bot, reading in configuration from a config file """
-  f = open(config_file, 'r')
+  f = open(config_file, 'rb')
   c = pickle.load(f)
   f.close()
   ApplesauceBot(c[0], c[1], c[2], c[3], c[4]).run()

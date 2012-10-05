@@ -7,29 +7,15 @@ import pickle
 
 filename = "bot.conf"
 
-def sout(val):
-  """ print a line without a following newline """
-  sys.stdout.write(val)
-  sys.stdout.flush()
-
-def sin( ):
-  """ read a line from stdin, and strip trailing whitespace """
-  return sys.stdin.readline().rstrip()
-
 if __name__ == "__main__":
   """ create configuration """
-  sout("server? ")
-  server = sin() 
-  sout("channel? ")
-  channel = sin()
-  sout("nick? ")
-  nick = sin()
-  sout("password? ")
-  password = sin()
-  sout("admin password? ")
-  admin = sin()
-  f = open(filename, 'w')
+  server = input("server? ") 
+  channel = input("channel? ")
+  nick = input("nick? ")
+  password = input("password? ")
+  admin = input("admin password? ")
+  f = open(filename, 'wb')
   pickle.dump((server, channel, nick, password, admin), f)
   f.close()
-  print "Configuration saved as %s" % filename
+  print("Configuration saved as %s" % filename)
 
