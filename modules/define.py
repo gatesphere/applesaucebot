@@ -36,5 +36,5 @@ def define(self, username, cmdtime, command, args):
   else:
     self.protocol.privmsg(self.channel, "%s, I need at least one word to define!" % username)
 
-self.register_action('define', define)
+self.register_action(b'define', define)
 

@@ -48,7 +48,7 @@ class ApplesauceBot(botlib.Bot):
       username = self.get_username()
       cmdtime = time.strftime("%H:%M:%S %Y-%m-%d", time.localtime())
       d = self.get_message_data().lower().split()
-      if d[0].startswith(self.nick.lower()):
+      if d[0].startswith(self.nick.lower().encode()):
         command, args = d[1], d[2:]
       else:
         command, args = d[0][1:], d[1:]

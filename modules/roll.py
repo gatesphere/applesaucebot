@@ -20,4 +20,4 @@ def roll(self, username, cmdtime, command, args):
       values.append(int(die))
   self.protocol.privmsg(self.channel, "%s rolled %s: %d %s" % (username, diestring, sum(values), values))
 
-self.register_action('roll', roll)
+self.register_action(b'roll', roll)

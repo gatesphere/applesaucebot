@@ -13,5 +13,5 @@ def quote(self, username, cmdtime, command, args):
   ascii_string = reg.sub(asciirepl, content).decode('ascii', 'ignore').splitlines()
   self.protocol.privmsg(self.channel, "%s" % " ".join(ascii_string))
 
-self.register_action('quote', quote)
+self.register_action(b'quote', quote)
 

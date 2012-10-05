@@ -29,5 +29,5 @@ def gists(self, username, cmdtime, command, args):
   else:
     self.protocol.privmsg(self.channel, "%s, I need a username to search!" % username)
 
-self.register_action('gists', gists)
+self.register_action(b'gists', gists)
 

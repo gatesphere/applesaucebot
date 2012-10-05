@@ -7,4 +7,4 @@ def die(self, username, cmdtime, command, args):
   else:
     self.protocol.privmsg(self.channel, "%s: I can't let you do that." % username)
 
-self.register_action('die', die)
+self.register_action(b'die', die)

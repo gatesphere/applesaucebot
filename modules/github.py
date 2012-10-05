@@ -28,5 +28,5 @@ def github(self, username, cmdtime, command, args):
   else:
     self.protocol.privmsg(self.channel, "%s, I need at least a keyword to search!" % username)
 
-self.register_action('github', github)
+self.register_action(b'github', github)
 

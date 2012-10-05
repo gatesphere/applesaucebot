@@ -124,10 +124,10 @@ class Bot(threading.Thread):
     return self.data.split()[4:]
   
   def get_username(self):
-    return self.data.split("!")[0].strip(":")
+    return self.data.split(b"!")[0].strip(b":")
   
   def get_hostname(self):
-    return self.data.split("!")[1].split(" ")[0]
+    return self.data.split(b"!")[1].split(b" ")[0]
   
   def run(self):
     # Start loop and perform user defined actions
