@@ -1,5 +1,5 @@
 def gists(self, username, cmdtime, command, args):
-  import json, urllib, binascii
+  import json, urllib.request, binascii
 
   def asciirepl(match):
     s = match.group()
@@ -9,9 +9,9 @@ def gists(self, username, cmdtime, command, args):
     gist_count = 3
     args = " ".join(args)
     url = 'https://api.github.com/users/' + args + '/gists'
-    content = urllib.urlopen(url).read()
+    content = urllib.request.urlopen(url).read().decode('utf-8')
     reg = re.compile(r'\\x(\w{2})')
-    ascii_string = reg.sub(asciirepl, content).decode('ascii', 'ignore')
+    ascii_string = reg.sub(asciirepl, content)
     data = json.loads(ascii_string)
     if str(data).find('Not Found') != -1:
       self.protocol.privmsg(self.channel, "I couldn't find any gists for %s." % args)
@@ -29,5 +29,5 @@ def gists(self, username, cmdtime, command, args):
   else:
     self.protocol.privmsg(self.channel, "%s, I need a username to search!" % username)
 
-self.register_action(b'gists', gists)
+self.register_action('gists', gists)
 

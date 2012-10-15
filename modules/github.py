@@ -1,5 +1,5 @@
 def github(self, username, cmdtime, command, args):
-  import json, urllib, binascii
+  import json, urllib.request, binascii
 
   def asciirepl(match):
     s = match.group()
@@ -9,9 +9,9 @@ def github(self, username, cmdtime, command, args):
     repo_count = 3
     args = " ".join(args)
     url = 'https://api.github.com/legacy/repos/search/' + args
-    content = urllib.urlopen(url).read()
+    content = urllib.request.urlopen(url).read().decode("utf-8")
     reg = re.compile(r'\\x(\w{2})')
-    ascii_string = reg.sub(asciirepl, content).decode('ascii', 'ignore')
+    ascii_string = reg.sub(asciirepl, content)
     data = json.loads(ascii_string)['repositories']
     for repo in data:
       r_name = repo['name']
@@ -28,5 +28,5 @@ def github(self, username, cmdtime, command, args):
   else:
     self.protocol.privmsg(self.channel, "%s, I need at least a keyword to search!" % username)
 
-self.register_action(b'github', github)
+self.register_action('github', github)
 

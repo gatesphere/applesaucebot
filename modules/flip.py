@@ -6,4 +6,4 @@ def flip(self, username, cmdtime, command, args):
     coin = "tails"
   self.protocol.privmsg(self.channel, "%s flipped a coin: %s" % (username, coin))
 
-self.register_action(b'flip', flip)
+self.register_action('flip', flip)

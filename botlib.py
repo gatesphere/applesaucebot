@@ -14,7 +14,7 @@ import sys, time, random, string, threading
 #check_found = lambda s, k: (True if s.find(k) > -1 else False)
 def check_found(s, k):
   try:
-    if s.find(k.encode()) > -1:
+    if s.find(k) > -1:
       return True
     else:
       return False
@@ -53,7 +53,7 @@ class Protocol:
         raise RuntimeError("Connection reset by peer.")
       else:
         data += chunk
-    return data
+    return data.decode("utf-8")
   
   def join(self, channel):
     self.send("JOIN %s" % channel)
@@ -124,10 +124,10 @@ class Bot(threading.Thread):
     return self.data.split()[4:]
   
   def get_username(self):
-    return self.data.split(b"!")[0].strip(b":")
+    return self.data.split("!")[0].strip(":")
   
   def get_hostname(self):
-    return self.data.split(b"!")[1].split(b" ")[0]
+    return self.data.split("!")[1].split(" ")[0]
   
   def run(self):
     # Start loop and perform user defined actions

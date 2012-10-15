@@ -1,5 +1,5 @@
 def define(self, username, cmdtime, command, args):
-  import json, urllib, binascii
+  import json, urllib.request, binascii
 
   def asciirepl(match):
     s = match.group()
@@ -9,9 +9,11 @@ def define(self, username, cmdtime, command, args):
     defn_count = 3
     for word in args:
       url = 'http://www.google.com/dictionary/json?callback=a&q=' + word + '&sl=en&tl=en&restrict=pr,de&client=te' 
-      content = urllib.urlopen(url).read()[2:-10]
+      response = urllib.request.urlopen(url)
+      encoding = response.headers.get_content_charset()
+      content = response.readall().decode(encoding)[2:-10]
       reg = re.compile(r'\\x(\w{2})')
-      ascii_string = reg.sub(asciirepl, content).decode('ascii', 'ignore')
+      ascii_string = reg.sub(asciirepl, content)
       data = json.loads(ascii_string)
       if 'primaries' in data:
         for bunch in data['primaries']:
@@ -36,5 +38,5 @@ def define(self, username, cmdtime, command, args):
   else:
     self.protocol.privmsg(self.channel, "%s, I need at least one word to define!" % username)
 
-self.register_action(b'define', define)
+self.register_action('define', define)
 

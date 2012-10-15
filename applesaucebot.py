@@ -36,7 +36,7 @@ class ApplesauceBot(botlib.Bot):
     if password != None:
       self.protocol.privmsg("nickserv", "identify %s" % password)
     logging.info('Connected to channel %s with nick %s' % (self.channel, self.nick))
-    self.regex = regex = re.compile(("^(\?|%s:|%s,)" % (self.nick, self.nick)).encode(), re.IGNORECASE)
+    self.regex = regex = re.compile("^(\?|%s:|%s,)" % (self.nick, self.nick), re.IGNORECASE)
 
   def __actions__(self):
     """ action dispatcher """
@@ -48,7 +48,7 @@ class ApplesauceBot(botlib.Bot):
       username = self.get_username()
       cmdtime = time.strftime("%H:%M:%S %Y-%m-%d", time.localtime())
       d = self.get_message_data().lower().split()
-      if d[0].startswith(self.nick.lower().encode()):
+      if d[0].startswith(self.nick.lower()):
         command, args = d[1], d[2:]
       else:
         command, args = d[0][1:], d[1:]
@@ -63,7 +63,7 @@ class ApplesauceBot(botlib.Bot):
     #if not self.joined:
     #  return
     self.protocol.send("WHO %s" % self.channel)
-    info = b""
+    info = ""
     while not botlib.check_found(info, "End of /WHO list"):
       info += self.protocol.recv()
       logging.info(info)
@@ -84,7 +84,7 @@ class ApplesauceBot(botlib.Bot):
   def get_message_data(self):
     """ gets the "data" portion of the message """
     d = self.data
-    d = d.split(b":", 2)
+    d = d.split(":", 2)
     return (d[2] if len(d) == 3 else None)
 
   def load_commands(self):
