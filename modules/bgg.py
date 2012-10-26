@@ -30,7 +30,7 @@ def bgg(self, username, cmdtime, command, args):
     for game in games:
       name = game.find("name").text
       desc = game.find("description").text[:300] + " ..."
-      link = "http://boardgamegeek.com/" + game.attrib["objectid"]
+      link = "http://boardgamegeek.com/boardgame/" + game.attrib["objectid"]
       self.protocol.privmsg(self.channel, "%s -- %s (on bgg: %s)" % (name, desc, link))
   else:
     self.protocol.privmsg(self.channel, "%s, I need a name to search!" % username)

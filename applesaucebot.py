@@ -48,10 +48,14 @@ class ApplesauceBot(botlib.Bot):
       username = self.get_username()
       cmdtime = time.strftime("%H:%M:%S %Y-%m-%d", time.localtime())
       d = self.get_message_data().lower().split()
-      if d[0].startswith(self.nick.lower()):
-        command, args = d[1], d[2:]
-      else:
-        command, args = d[0][1:], d[1:]
+      command, args = None, None 
+      try:
+        if d[0].startswith(self.nick.lower()):
+          command, args = d[1], d[2:]
+        else:
+          command, args = d[0][1:], d[1:]
+      except:
+        self.unknown_command(username, cmdtime, None, None)
       logging.info("%s - %s is trying to get my attention: %s" % (cmdtime, username, self.data))
       if command:
         self.do_command(username, cmdtime, command.lower(), args)
