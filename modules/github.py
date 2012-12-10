@@ -18,7 +18,9 @@ def github(self, username, cmdtime, command, args):
       r_language = repo['language']
       r_owner = repo['owner']
       r_description = repo['description']
+      r_url = "https://github.com/%s/%s" % (r_owner, r_name)
       self.protocol.privmsg(self.channel, "%s - language: %s - owner: %s - %s" % (r_name, r_language, r_owner, r_description))
+      self.protocol.privmsg(self.channel, "%s" % r_url)
       repo_count -= 1
       if repo_count == 0:
         return

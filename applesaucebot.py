@@ -28,7 +28,8 @@ class ApplesauceBot(botlib.Bot):
     """ constructor, builds an IRC bot with the correct configuration, 
         connects to a channel, loads commands
     """
-    logging.basicConfig(filename=log_file, level=logging.DEBUG)
+    #logging.basicConfig(filename=log_file, level=logging.DEBUG)
+    logging.basicConfig(filename=log_file, level=logging.CRITICAL)
     logging.info('Bot starting up at %s' % time.strftime("%H:%M:%S %Y-%m-%d", time.localtime()))
     self.admin_pw = admin_password
     self.load_commands()
